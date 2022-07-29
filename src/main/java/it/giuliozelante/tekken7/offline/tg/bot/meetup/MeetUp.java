@@ -1,10 +1,12 @@
-package tekken7.offline.tg.bot.meetup;
+package it.giuliozelante.tekken7.offline.tg.bot.meetup;
 
+import lombok.extern.log4j.Log4j2;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@Log4j2
 public class MeetUp extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
@@ -12,9 +14,9 @@ public class MeetUp extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             // Set variables
             String message_text = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
+            long chatId = update.getMessage().getFrom().getId();//.getChatId();
 
-            SendMessage message = SendMessage.builder().build(); // Create a message object object
+            SendMessage message = new SendMessage(); // Create a message object object
             message.setChatId(String.valueOf(chatId));
             message.setText(message_text);
             try {
