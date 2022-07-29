@@ -1,0 +1,49 @@
+plugins {
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.bmuschko.docker-java-application' version '7.4.0'
+    id 'org.graalvm.buildtools.native' version '0.9.13'
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'org.telegram:telegrambots:6.0.1'
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'tekken7.offline.tg.bot.App'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+docker {
+    javaApplication {
+        baseImage = 'openjdk:17.0.2-oracle'
+    }
+}
+
+graalvmNative {
+    binaries {
+        main {
+            javaLauncher = javaToolchains.launcherFor {
+                languageVersion = JavaLanguageVersion.of(17)
+                vendor = JvmVendorSpec.matching("GraalVM Community")
+            }
+        }
+    }
+}
+
+/*
+tasks.named("nativeCompile") {
+    classpathJar = shadow.
+}*/
