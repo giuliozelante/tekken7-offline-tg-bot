@@ -5,14 +5,23 @@ micronaut:
     port: -1
 datasources:
   default:
+    name: db
     url: jdbc:h2:file:./db;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
-    username: sa
-    password: ''
-    schema-generate: CREATE_DROP
+    username: t7_offline_tg_bot
+    password: 33QxJ3LYeDToK3P
+    schema-generate: CREATE
     dialect: H2
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+    entity-scan:
+      packages:
+        - 'it.giuliozelante.tekken7.offline.tg.bot.meetup.entity'
 netty:
   default:
     allocator:
       max-order: 3
-jpa.default.properties.hibernate.hbm2ddl.auto: update

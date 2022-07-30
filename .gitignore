@@ -5,3 +5,16 @@
 build
 local.properties
 .idea
+
+Thumbs.db
+.DS_Store
+build/
+target/
+out/
+*.iml
+*.ipr
+*.iws
+.project
+.settings
+.classpath
+.factorypath
