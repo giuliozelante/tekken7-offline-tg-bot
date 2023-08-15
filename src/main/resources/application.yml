@@ -1,0 +1,29 @@
+micronaut:
+  application:
+    name: tekken7OfflineTgBot
+datasources:
+  default:
+    name: db
+    url: jdbc:p6spy:h2:tcp://192.168.1.105/~/db;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: ${JDBC_DRIVER:com.p6spy.engine.spy.P6SpyDriver}
+    username: ${T7_OFFLINE_BOT_DB_USERNAME}
+    password: ${T7_OFFLINE_BOT_DB_PASSWORD}
+    schema-generate: CREATE
+    dialect: H2
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        show_sql: false
+    entity-scan:
+      packages:
+        - 'it.giuliozelante.tekken7.offline.tg.bot.meetup.entity'
+virustotal:
+  api:
+    key: ${VIRUS_TOTAL_API_KEY}
+    root: https://www.virustotal.com/api/v3/
+telegram.bot:
+  token: ${T7_OFFLINE_BOT_TOKEN}
+  username: ${T7_OFFLINE_BOT_USERNAME}
