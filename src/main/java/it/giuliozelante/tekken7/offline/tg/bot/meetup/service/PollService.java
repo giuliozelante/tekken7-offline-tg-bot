@@ -25,7 +25,7 @@ public class PollService {
     @Inject
     private PollRepository pollRepository;
 
-    private final List<String> options = List.of("Venerd\u00EC", "Sabato", "Domenica");
+    private final List<String> options = List.of("Sabato", "Domenica");
 
     public void startPoll(TelegramGroup group, MeetUp meetUp) {
         try {

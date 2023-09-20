@@ -32,6 +32,9 @@ public class BotRegistryService implements ApplicationEventListener<StartupEvent
     @Inject
     PollService pollService;
 
+    @Inject
+    CommandService commandService;
+
     public void onApplicationEvent(final StartupEvent event) {
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -64,6 +67,7 @@ public class BotRegistryService implements ApplicationEventListener<StartupEvent
         try {
             telegramBotsApi.registerBot(meetUp);
             log.info("Registered {}", meetUp.getBotUsername());
+            commandService.updateCommands(meetUp);
         } catch (TelegramApiException e) {
             log.error(e.getMessage(), e);
         }

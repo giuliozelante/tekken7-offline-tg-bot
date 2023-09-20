@@ -55,16 +55,16 @@ public class MeetUp extends TelegramLongPollingBot {
             if (isAdmin(update, chatId)) {
                 textMessage = textMessage.substring(1);
                 switch (textMessage) {
-                    case "startMeetUp":
+                    case "start_meet_up":
                         handleStartMeetUp(group, chatId);
                         break;
-                    case "startMeetUpPoll":
+                    case "start_meet_up_poll":
                         handleStartMeetUpPoll(group);
                         break;
-                    case "stopMeetUp":
+                    case "stop_meet_up":
                         handleStopMeetUp(group, chatId);
                         break;
-                    case "helpMeetUp":
+                    case "help_meet_up":
                         handleHelp(chatId);
                         break;
                     default:
@@ -136,10 +136,9 @@ public class MeetUp extends TelegramLongPollingBot {
 
     private void handleOtherMessages(Long chatId, String textMessage, Integer messageId) {
         // check if the message is an url
-        if (URL_PATTERN.matcher(textMessage).matches()) {
-            if (isUrlMalicious(textMessage)) {
-                sendMessage(chatId, "The url " + textMessage + " is malicious", messageId);
-            }
+        if (URL_PATTERN.matcher(textMessage).matches() && (isUrlMalicious(textMessage))) {
+            sendMessage(chatId, "The url " + textMessage + " is malicious", messageId);
+
         }
     }
 
