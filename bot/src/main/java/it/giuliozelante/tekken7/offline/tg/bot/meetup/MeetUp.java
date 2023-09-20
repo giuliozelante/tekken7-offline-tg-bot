@@ -104,7 +104,7 @@ public class MeetUp extends TelegramLongPollingBot {
             }
             List<KeyboardRow> keyboardRows = List.of(new KeyboardRow(List.of(new KeyboardButton("Question"))));
             ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardRows);
-            sendMessage(chatId, "Poll details", replyKeyboardMarkup);
+            sendMessage(chatId, null, replyKeyboardMarkup);
             group.setStarted(true);
             groupService.save(group);
             sendMessage(chatId, getStartMeetUpMessage());
@@ -189,9 +189,8 @@ public class MeetUp extends TelegramLongPollingBot {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(textMessage);
-        if (replyMarkup != null)
-            message.setReplyMarkup(replyMarkup);
-        if (messageId != null)
+        message.setReplyMarkup(replyMarkup);
+        if (messageId != null) {
             message.setReplyToMessageId(messageId);
         try {
             execute(message);
