@@ -9,6 +9,10 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdm
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import io.micronaut.context.annotation.Bean;
@@ -92,6 +96,9 @@ public class MeetUp extends TelegramLongPollingBot {
                 group = new TelegramGroup();
                 group.setChatId(chatId);
             }
+            List<KeyboardRow> keyboardRows = List.of(new KeyboardRow(List.of(new KeyboardButton("Question"))));
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardRows);
+            sendMessage(chatId, null, replyKeyboardMarkup);
             group.setStarted(true);
             groupService.save(group);
             sendMessage(chatId, getStartMeetUpMessage());
@@ -158,17 +165,25 @@ public class MeetUp extends TelegramLongPollingBot {
             log.error(e.getMessage(), e);
         }
         return chatAdministrators;
-
     }
 
     private void sendMessage(Long chatId, String textMessage) {
-        this.sendMessage(chatId, textMessage, null);
+        this.sendMessage(chatId, textMessage, null, null);
     }
 
     private void sendMessage(Long chatId, String textMessage, Integer messageId) {
+        this.sendMessage(chatId, textMessage, null, messageId);
+    }
+
+    private void sendMessage(Long chatId, String textMessage, ReplyKeyboard replyMarkup) {
+        this.sendMessage(chatId, textMessage, replyMarkup, null);
+    }
+
+    private void sendMessage(Long chatId, String textMessage, ReplyKeyboard replyMarkup, Integer messageId) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(textMessage);
+        message.setReplyMarkup(replyMarkup);
         if (messageId != null) {
             message.setReplyToMessageId(messageId);
             try {
