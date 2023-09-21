@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/bin/sh
 
 #
@@ -247,3 +248,5 @@ eval "set -- $(
 )" '"$@"'
 
 exec "$JAVACMD" "$@"
+=======
+>>>>>>> 1a67e5b (chore(build.gradle): update plugin versions and dependencies)
