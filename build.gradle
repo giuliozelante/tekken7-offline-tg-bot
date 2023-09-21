@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    annotationProcessor 'io.micronaut.data:micronaut-data-processor',
+     annotationProcessor 'io.micronaut.data:micronaut-data-processor',
             'io.micronaut.serde:micronaut-serde-processor',
             'org.projectlombok:lombok'
     implementation 'io.micronaut:micronaut-http-client',
@@ -23,7 +23,7 @@ dependencies {
             'io.micronaut.sql:micronaut-jdbc-hikari',
             'org.telegram:telegrambots:6.8.0',
             'p6spy:p6spy:3.9.1'
-    compileOnly 'org.projectlombok:lombok'
+    compileOnly  'org.projectlombok:lombok'
     runtimeOnly 'ch.qos.logback:logback-classic',
             'com.h2database:h2',
             'org.yaml:snakeyaml:2.2'
@@ -46,6 +46,7 @@ micronaut {
         incremental(true)
         annotations('it.giuliozelante.tekken7.offline.tg.bot.*')
     }
+    aot {
     aot {
         optimizeServiceLoading = false
         convertYamlToJava = false
