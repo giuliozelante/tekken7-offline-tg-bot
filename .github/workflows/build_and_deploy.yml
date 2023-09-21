@@ -14,12 +14,9 @@ jobs:
 
       - name: Setup Java
         uses: actions/setup-java@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          distribution: 'temurin'
-          java-version: '21'
-
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '17'
       - name: Build and clean Docker image
         run: ./gradlew clean optimizedDockerBuild
       - name: Check Docker images
