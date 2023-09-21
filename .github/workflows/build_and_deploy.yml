@@ -18,6 +18,10 @@ jobs:
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
+
+      - name: Set up Docker
+        uses: crazy-max/ghaction-setup-docker@v2
+
       - name: Build and clean Docker image
         run: ./gradlew clean optimizedDockerBuild
 
