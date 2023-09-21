@@ -31,17 +31,9 @@ jobs:
           username: ${{ secrets.REMOTE_USERNAME }}
           password: ${{ secrets.REMOTE_PASSWORD }}
           port: ${{ secrets.REMOTE_PORT }}
-
-          # REM Kill existing Docker container
           script: |
             docker kill t7_offline_tg_bot
-
-          # REM Load Docker image from tar file
-          script: |
             docker load -i /home/gzelante/tekken7-offline-tg-bot.tar
-
-          # REM Run Docker container with environment variables
-          script: |
             docker run -d -e T7_OFFLINE_BOT_DB_PASSWORD \
                             -e T7_OFFLINE_BOT_DB_USERNAME \
                             -e T7_OFFLINE_BOT_TOKEN \
