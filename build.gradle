@@ -1,10 +1,11 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'io.micronaut.application' version '4.0.2'
-    id 'io.micronaut.aot' version '4.0.2'
+    id 'io.micronaut.application' version '4.1.0'
+    id 'io.micronaut.aot' version '4.1.0'
+    id 'com.github.ben-manes.versions' version '0.47.0'
+    id 'fr.brouillard.oss.gradle.jgitver' version '0.10.0-rc03'
 }
 
-version = '0.1'
 group = 'it.giuliozelante.tekken7.offline.tg.bot'
 
 repositories {
@@ -12,19 +13,19 @@ repositories {
 }
 
 dependencies {
-   annotationProcessor 'io.micronaut.data:micronaut-data-processor',
+    annotationProcessor 'io.micronaut.data:micronaut-data-processor',
             'io.micronaut.serde:micronaut-serde-processor',
             'org.projectlombok:lombok'
     implementation 'io.micronaut:micronaut-http-client',
             'io.micronaut.data:micronaut-data-hibernate-jpa',
             'io.micronaut.serde:micronaut-serde-jackson',
             'io.micronaut.sql:micronaut-jdbc-hikari',
-            'org.telegram:telegrambots:6.7.0',
+            'org.telegram:telegrambots:6.8.0',
             'p6spy:p6spy:3.9.1'
-    compileOnly'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'ch.qos.logback:logback-classic',
             'com.h2database:h2',
-            'org.yaml:snakeyaml'
+            'org.yaml:snakeyaml:2.2'
 }
 
 application {
@@ -36,16 +37,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+// Disable GraalVM Native Image's automatic toolchain detection
 graalvmNative.toolchainDetection = false
 
 micronaut {
     processing {
         incremental(true)
-        annotations("it.giuliozelante.tekken7.offline.tg.bot.*")
+        annotations('it.giuliozelante.tekken7.offline.tg.bot.*')
     }
-     aot {
-    // Please review carefully the optimizations enabled below
-    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+    aot {
         optimizeServiceLoading = false
         convertYamlToJava = false
         precomputeOperations = true
@@ -54,4 +54,3 @@ micronaut {
         deduceEnvironment = true
     }
 }
-

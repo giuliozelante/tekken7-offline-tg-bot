@@ -79,9 +79,11 @@ public class MeetUp extends TelegramLongPollingBot {
     }
 
     private boolean isUrlMalicious(String url) {
-        return virusTotalApiClient
+        boolean isUrlMalicious = virusTotalApiClient
                 .getUrlOrFileAnalysis(virusTotalApiClient.scanUrl(url).data().id()).data().attributes()
                 .stats().get("malicious") > 0;
+        log.debug("{} is malicious: {}", url, isUrlMalicious);
+        return isUrlMalicious;
     }
 
     private void handleStartMeetUp(TelegramGroup group, long chatId) {
