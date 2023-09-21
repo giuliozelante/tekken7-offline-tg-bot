@@ -6,7 +6,6 @@ plugins {
     id 'fr.brouillard.oss.gradle.jgitver' version '0.10.0-rc03'
 }
 
-version = '0.0.1'
 group = 'it.giuliozelante.tekken7.offline.tg.bot'
 
 repositories {
