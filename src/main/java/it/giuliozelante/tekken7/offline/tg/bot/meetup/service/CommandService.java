@@ -45,4 +45,8 @@ public class CommandService {
         }
 
     }
+
+    public List<Command> getCommands() {
+        return this.commamdRepository.findAll();
+    }
 }

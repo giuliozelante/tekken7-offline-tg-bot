@@ -3,6 +3,7 @@ package it.giuliozelante.tekken7.offline.tg.bot.meetup;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdministrators;
@@ -17,7 +18,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Value;
+import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.Command;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.TelegramGroup;
+import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.CommandService;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.GroupService;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.PollService;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.VirusTotalApiClient;
@@ -40,6 +43,9 @@ public class MeetUp extends TelegramLongPollingBot {
     protected GroupService groupService;
     @Inject
     protected PollService pollService;
+    @Inject
+    protected CommandService commandService;
+
     @Inject
     protected VirusTotalApiClient virusTotalApiClient;
     private final Pattern URL_PATTERN = Pattern.compile(
@@ -98,7 +104,7 @@ public class MeetUp extends TelegramLongPollingBot {
             }
             List<KeyboardRow> keyboardRows = List.of(new KeyboardRow(List.of(new KeyboardButton("Question"))));
             ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardRows);
-            sendMessage(chatId, null, replyKeyboardMarkup);
+            sendMessage(chatId, "Poll details", replyKeyboardMarkup);
             group.setStarted(true);
             groupService.save(group);
             sendMessage(chatId, getStartMeetUpMessage());
@@ -121,13 +127,13 @@ public class MeetUp extends TelegramLongPollingBot {
     }
 
     private void handleHelp(long chatId) {
-        sendMessage(chatId, "Available commands are: \n" +
-                "'startMeetUp': Starts a new meet up. If a meet up is already started, it will inform you.\n" +
-                "'startMeetUpPoll': even if there's an active poll it will close all active ones and start a new one for the current week.\n"
-                +
-                "'stopMeetUp': Stops the current meet up if it's started.\n" +
-                "'helpMeetUp': Shows this help message.\n" +
-                "Please use them as required.");
+
+        List<Command> commands = this.commandService.getCommands();
+        String commandsList = commands.stream().map(command -> command.getName() + ": " + command.getDescription())
+                .collect(Collectors.joining("\n"));
+        StringBuilder message = new StringBuilder("Available commands are: \n");
+        message.append(commandsList);
+        sendMessage(chatId, message.toString());
     }
 
     private void handleDefault(long chatId) {
@@ -183,14 +189,15 @@ public class MeetUp extends TelegramLongPollingBot {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(textMessage);
-        message.setReplyMarkup(replyMarkup);
-        if (messageId != null) {
+        if (replyMarkup != null)
+            message.setReplyMarkup(replyMarkup);
+        if (messageId != null)
             message.setReplyToMessageId(messageId);
-            try {
-                execute(message);
-            } catch (TelegramApiException e) {
-                log.error(e.getMessage(), e);
-            }
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error(e.getMessage(), e);
         }
+
     }
 }
