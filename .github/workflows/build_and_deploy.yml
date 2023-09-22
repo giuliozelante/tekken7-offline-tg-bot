@@ -8,11 +8,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    services:
-      registry:
-        image: registry:2
-        ports:
-          - 5000:5000
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,7 +23,7 @@ jobs:
       - name: Check Docker images
         run: docker images
       - name: Save Docker image to tar file
-        run: docker save localhost:5000/name/tekken7-offline-tg-bot:latest > tekken7-offline-tg-bot.tar
+        run: docker save tekken7-offline-tg-bot:latest > tekken7-offline-tg-bot.tar
       - name: Transfer tar file to remote server
         uses: appleboy/ssh-action@master
         with:
