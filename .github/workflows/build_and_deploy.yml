@@ -16,6 +16,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Make staging directory
+        run: mkdir staging
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Build Docker image
+        run: ./gradlew clean build optimizedDockerFile
+      - name: List directories
+        run: ls -latr
+      - name: Copy native client to staging
+        run: cp -r build/docker/optimized/Dockerfile staging
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -27,16 +37,7 @@ jobs:
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
-      - name: Make staging directory
-        run: mkdir staging
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Build Docker image
-        run: ./gradlew clean build optimizedDockerFile
-      - name: List directories
-        run: ls -latr
-      - name: Copy native client to staging
-        run: cp -r build/docker/optimized/Dockerfile staging
+
       - name: Build and export
         uses: docker/build-push-action@v2
         with:
