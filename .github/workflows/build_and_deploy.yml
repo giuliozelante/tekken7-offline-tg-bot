@@ -32,7 +32,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Build Docker image
-        run: ./gradlew clean optimizedDockerFile
+        run: ./gradlew clean build optimizedDockerFile
       - name: List directories
         run: ls -latr
       - name: Copy native client to staging
