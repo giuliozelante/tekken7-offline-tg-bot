@@ -12,22 +12,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
-
-      - name: Set up Docker
-        uses: crazy-max/ghaction-setup-docker@v2
-
-      - name: Build and clean Docker image
+      - name: Build Docker image
         run: ./gradlew clean optimizedDockerBuild
-
       - name: Save Docker image to tar file
         run: docker save tekken7-offline-tg-bot:latest > tekken7-offline-tg-bot.tar
-
       - name: SSH into remote server
         uses: appleboy/ssh-action@master
         with:
