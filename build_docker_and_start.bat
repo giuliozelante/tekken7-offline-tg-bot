@@ -24,5 +24,6 @@ docker run -d -e T7_OFFLINE_BOT_DB_PASSWORD \
                 -e T7_OFFLINE_BOT_TOKEN \
                 -e T7_OFFLINE_BOT_USERNAME \
                 -e VIRUS_TOTAL_API_KEY \
-                --rm --name t7_offline_tg_bot -it tekken7-offline-tg-bot:latest
+                --rm --name t7_offline_tg_bot -it tekken7-offline-tg-bot:latest \
+                -v /var/logs/tekken-offline-tg-bot:/var/logs/tekken-offline-tg-bot
 EOF"
