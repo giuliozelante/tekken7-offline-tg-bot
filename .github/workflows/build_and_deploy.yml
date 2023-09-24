@@ -39,11 +39,4 @@ jobs:
           password: ${{ secrets.REMOTE_PASSWORD }}
           port: ${{ secrets.REMOTE_PORT }}
           script: |
-            docker kill t7_offline_tg_bot
-            docker load -i /home/gzelante/tekken7-offline-tg-bot.tar
-            docker run -d -e T7_OFFLINE_BOT_DB_PASSWORD \
-                            -e T7_OFFLINE_BOT_DB_USERNAME \
-                            -e T7_OFFLINE_BOT_TOKEN \
-                            -e T7_OFFLINE_BOT_USERNAME \
-                            -e VIRUS_TOTAL_API_KEY \
-                            --rm --name t7_offline_tg_bot -it tekken7-offline-tg-bot:latest
+            /etc/local.d/start_t7_offline_bot.start
