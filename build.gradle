@@ -47,7 +47,6 @@ micronaut {
         annotations('it.giuliozelante.tekken7.offline.tg.bot.*')
     }
     aot {
-    aot {
         optimizeServiceLoading = false
         convertYamlToJava = false
         precomputeOperations = true
