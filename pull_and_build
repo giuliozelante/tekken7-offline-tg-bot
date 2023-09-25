@@ -1,0 +1,5 @@
+#!/bin/bash
+
+git pull
+./gradlew clean optimizedDockerBuild
+/etc/local.d/start_t7_offline_bot.start
