@@ -1,5 +1,6 @@
 package it.giuliozelante.tekken7.offline.tg.bot.meetup.entity;
 
+import java.sql.Date;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -30,6 +31,10 @@ public class Poll {
     private String title;
 
     private List<String> options;
+
+    private Date startDate;
+
+    private Date closeDate;
 
     @OneToOne
     @JoinColumn(name = "group_id")

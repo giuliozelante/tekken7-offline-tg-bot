@@ -38,17 +38,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-<<<<<<< HEAD
-=======
-tasks.named('run') {
-    setConsoleOption('plain')
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}
-
->>>>>>> 1a67e5b (chore(build.gradle): update plugin versions and dependencies)
 // Disable GraalVM Native Image's automatic toolchain detection
 graalvmNative.toolchainDetection = false
 
