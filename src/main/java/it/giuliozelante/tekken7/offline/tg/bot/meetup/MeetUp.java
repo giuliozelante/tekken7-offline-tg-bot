@@ -20,6 +20,7 @@ import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Value;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.Command;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.TelegramGroup;
+import it.giuliozelante.tekken7.offline.tg.bot.meetup.model.Commands;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.CommandService;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.GroupService;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.PollService;
@@ -48,8 +49,7 @@ public class MeetUp extends TelegramLongPollingBot {
 
     @Inject
     protected VirusTotalApiClient virusTotalApiClient;
-    private final Pattern URL_PATTERN = Pattern.compile(
-            "[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)");
+    private final Pattern URL_PATTERN = Pattern.compile("\\b[a-zA-Z0-9]+:\\/\\/[^\\s,)]+");
 
     @Override
     @Transactional
@@ -63,18 +63,18 @@ public class MeetUp extends TelegramLongPollingBot {
         String textMessage = update.getMessage().getText();
         if (update.getMessage().isCommand()) {
             if (isAdmin(update, chatId)) {
-                textMessage = textMessage.substring(1);
-                switch (textMessage) {
-                    case "start_meet_up":
-                        handleStartMeetUp(group, chatId);
+                Commands command = Commands.valueOf(textMessage.substring(1).toUpperCase());
+                switch (command) {
+                    case START_MEET_UP_SCHEDULE:
+                        handleStartMeetUpSchedule(group, chatId);
                         break;
-                    case "start_meet_up_poll":
+                    case START_MEET_UP_POLL:
                         handleStartMeetUpPoll(group);
                         break;
-                    case "stop_meet_up":
+                    case STOP_MEET_UP:
                         handleStopMeetUp(group, chatId);
                         break;
-                    case "help_meet_up":
+                    case HELP_MEET_UP:
                         handleHelp(chatId);
                         break;
                     default:
@@ -96,7 +96,7 @@ public class MeetUp extends TelegramLongPollingBot {
         return isUrlMalicious;
     }
 
-    private void handleStartMeetUp(TelegramGroup group, long chatId) {
+    private void handleStartMeetUpSchedule(TelegramGroup group, long chatId) {
         if (group == null || !group.isStarted()) {
             if (group == null) {
                 group = new TelegramGroup();
@@ -129,7 +129,8 @@ public class MeetUp extends TelegramLongPollingBot {
     private void handleHelp(long chatId) {
 
         List<Command> commands = this.commandService.getCommands();
-        String commandsList = commands.stream().map(command -> command.getName() + ": " + command.getDescription())
+        String commandsList = commands.stream()
+                .map(command -> "/" + command.getName() + ": " + command.getDescription())
                 .collect(Collectors.joining("\n"));
         StringBuilder message = new StringBuilder("Available commands are: \n");
         message.append(commandsList);
@@ -137,7 +138,8 @@ public class MeetUp extends TelegramLongPollingBot {
     }
 
     private void handleDefault(long chatId) {
-        sendMessage(chatId, "Unhandled command. Please use '/helpMeetUp' to see the list of valid commands.");
+        sendMessage(chatId, "Unhandled command. Please use '/" + Commands.HELP_MEET_UP.toString().toLowerCase()
+                + "' to see the list of valid commands.");
     }
 
     private boolean isAdmin(Update update, Long chatId) {

@@ -31,11 +31,11 @@ public class CommandService {
             Map<String, String> existingCommands = botCommands.stream()
                     .collect(Collectors.toMap(BotCommand::getCommand, BotCommand::getDescription));
             Map<String, String> newCommands = commands.stream()
-                    .collect(Collectors.toMap(Command::getName, Command::getDescription));
+                    .collect(Collectors.toMap(command -> "/" + command.getName(), Command::getDescription));
             if (!existingCommands.equals(newCommands)) {
                 SetMyCommands setMyCommands = new SetMyCommands();
                 setMyCommands.setCommands(commands.stream()
-                        .map(command -> new BotCommand(command.getName(), command.getDescription()))
+                        .map(command -> new BotCommand("/" + command.getName(), command.getDescription()))
                         .collect(Collectors.toList()));
                 meetUp.execute(setMyCommands);
             }
