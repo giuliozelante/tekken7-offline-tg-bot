@@ -23,4 +23,5 @@ public class TelegramGroup {
     @Column(name = "chat_id")
     private Long chatId;
     private boolean started;
+    private String languageCode;
 }

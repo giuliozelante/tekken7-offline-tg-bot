@@ -1,7 +1,10 @@
 package it.giuliozelante.tekken7.offline.tg.bot.meetup;
 
+import java.text.DateFormatSymbols;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.util.StringUtils;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.Command;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.TelegramGroup;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.model.Commands;
@@ -36,6 +40,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Getter
 public class MeetUp extends TelegramLongPollingBot {
+    private static KeyboardRow createKeyboardRow(String weekday) {
+        KeyboardRow row = new KeyboardRow();
+        KeyboardButton button = new KeyboardButton(weekday);
+        // You can set a callback data or text for the button if needed
+        // button.setCallbackData("WEEKDAY_" + weekday);
+        row.add(button);
+        return row;
+    }
+
     @Value("${telegram.bot.username}")
     private String botUsername;
     @Value("${telegram.bot.token}")
@@ -44,12 +57,13 @@ public class MeetUp extends TelegramLongPollingBot {
     protected GroupService groupService;
     @Inject
     protected PollService pollService;
-    @Inject
-    protected CommandService commandService;
 
     @Inject
+    protected CommandService commandService;
+    @Inject
     protected VirusTotalApiClient virusTotalApiClient;
-    private final Pattern URL_PATTERN = Pattern.compile("\\b[a-zA-Z0-9]+:\\/\\/[^\\s,)]+");
+
+    private final Pattern urlPattern = Pattern.compile("\\b[a-zA-Z0-9]+:\\/\\/[^\\s,)]+");
 
     @Override
     @Transactional
@@ -64,9 +78,10 @@ public class MeetUp extends TelegramLongPollingBot {
         if (update.getMessage().isCommand()) {
             if (isAdmin(update, chatId)) {
                 Commands command = Commands.valueOf(textMessage.substring(1).toUpperCase());
+                String languageCode = update.getMessage().getFrom().getLanguageCode();
                 switch (command) {
                     case START_MEET_UP_SCHEDULE:
-                        handleStartMeetUpSchedule(group, chatId);
+                        handleStartMeetUpSchedule(group, chatId, languageCode);
                         break;
                     case START_MEET_UP_POLL:
                         handleStartMeetUpPoll(group);
@@ -96,14 +111,25 @@ public class MeetUp extends TelegramLongPollingBot {
         return isUrlMalicious;
     }
 
-    private void handleStartMeetUpSchedule(TelegramGroup group, long chatId) {
+    private void handleStartMeetUpSchedule(TelegramGroup group, long chatId, String languageCode) {
         if (group == null || !group.isStarted()) {
             if (group == null) {
                 group = new TelegramGroup();
                 group.setChatId(chatId);
             }
-            List<KeyboardRow> keyboardRows = List.of(new KeyboardRow(List.of(new KeyboardButton("Question"))));
-            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup(keyboardRows);
+            if (StringUtils.isEmpty(group.getLanguageCode()))
+                group.setLanguageCode(languageCode);
+            List<KeyboardRow> keyboardRows = Arrays
+                    .stream(new DateFormatSymbols(new Locale(group.getLanguageCode())).getWeekdays())
+                    .filter(wd -> !wd.equals(""))
+                    .map(wd -> wd.substring(0, 1).toUpperCase() + wd.substring(1))
+                    .map(MeetUp::createKeyboardRow)
+                    .collect(Collectors.toList());
+            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            replyKeyboardMarkup.setSelective(true);
+            replyKeyboardMarkup.setResizeKeyboard(true);
+            replyKeyboardMarkup.setOneTimeKeyboard(false);
+            replyKeyboardMarkup.setKeyboard(keyboardRows);
             sendMessage(chatId, "Poll details", replyKeyboardMarkup);
             group.setStarted(true);
             groupService.save(group);
@@ -151,7 +177,7 @@ public class MeetUp extends TelegramLongPollingBot {
 
     private void handleOtherMessages(Long chatId, String textMessage, Integer messageId) {
         // check if the message is an url
-        if (URL_PATTERN.matcher(textMessage).matches() && (isUrlMalicious(textMessage))) {
+        if (urlPattern.matcher(textMessage).matches() && (isUrlMalicious(textMessage))) {
             sendMessage(chatId, "The url " + textMessage + " is malicious", messageId);
 
         }
@@ -161,7 +187,7 @@ public class MeetUp extends TelegramLongPollingBot {
         StringBuilder sb = new StringBuilder("Started Scheduled Job for the meetings.\n");
         sb.append("There will be a new Poll every Monday.\n");
         sb.append("Every thursday at midnight the poll will be closed");
-        sb.append("To stop the scheduled job write /stopMeetUp.\n");
+        sb.append("To stop the scheduled job write /" + Commands.STOP_MEET_UP.toString().toLowerCase());
         return sb.toString();
     }
 
