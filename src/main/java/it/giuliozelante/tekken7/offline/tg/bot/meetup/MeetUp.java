@@ -43,8 +43,6 @@ public class MeetUp extends TelegramLongPollingBot {
     private static KeyboardRow createKeyboardRow(String weekday) {
         KeyboardRow row = new KeyboardRow();
         KeyboardButton button = new KeyboardButton(weekday);
-        // You can set a callback data or text for the button if needed
-        // button.setCallbackData("WEEKDAY_" + weekday);
         row.add(button);
         return row;
     }
@@ -55,11 +53,12 @@ public class MeetUp extends TelegramLongPollingBot {
     private String botToken;
     @Inject
     protected GroupService groupService;
-    @Inject
-    protected PollService pollService;
 
     @Inject
+    protected PollService pollService;
+    @Inject
     protected CommandService commandService;
+
     @Inject
     protected VirusTotalApiClient virusTotalApiClient;
 
@@ -125,10 +124,9 @@ public class MeetUp extends TelegramLongPollingBot {
                     .map(wd -> wd.substring(0, 1).toUpperCase() + wd.substring(1))
                     .map(MeetUp::createKeyboardRow)
                     .collect(Collectors.toList());
+            keyboardRows.add(MeetUp.createKeyboardRow("Done"));
             ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-            replyKeyboardMarkup.setSelective(true);
             replyKeyboardMarkup.setResizeKeyboard(true);
-            replyKeyboardMarkup.setOneTimeKeyboard(false);
             replyKeyboardMarkup.setKeyboard(keyboardRows);
             sendMessage(chatId, "Poll details", replyKeyboardMarkup);
             group.setStarted(true);
@@ -228,4 +226,5 @@ public class MeetUp extends TelegramLongPollingBot {
         }
 
     }
+
 }
