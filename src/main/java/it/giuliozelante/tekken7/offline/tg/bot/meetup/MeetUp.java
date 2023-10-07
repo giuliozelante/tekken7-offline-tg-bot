@@ -13,7 +13,6 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdm
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -76,24 +75,30 @@ public class MeetUp extends TelegramLongPollingBot {
         String textMessage = update.getMessage().getText();
         if (update.getMessage().isCommand()) {
             if (isAdmin(update, chatId)) {
-                Commands command = Commands.valueOf(textMessage.substring(1).toUpperCase());
-                String languageCode = update.getMessage().getFrom().getLanguageCode();
-                switch (command) {
-                    case START_MEET_UP_SCHEDULE:
-                        handleStartMeetUpSchedule(group, chatId, languageCode);
-                        break;
-                    case START_MEET_UP_POLL:
-                        handleStartMeetUpPoll(group);
-                        break;
-                    case STOP_MEET_UP:
-                        handleStopMeetUp(group, chatId);
-                        break;
-                    case HELP_MEET_UP:
-                        handleHelp(chatId);
-                        break;
-                    default:
-                        handleDefault(chatId);
-                        break;
+                Commands command;
+                try {
+                    command = Commands.valueOf(textMessage.substring(1).toUpperCase());
+
+                    String languageCode = update.getMessage().getFrom().getLanguageCode();
+                    switch (command) {
+                        case START_MEET_UP_SCHEDULE:
+                            handleStartMeetUpSchedule(group, chatId, languageCode);
+                            break;
+                        case START_MEET_UP_POLL:
+                            handleStartMeetUpPoll(group);
+                            break;
+                        case STOP_MEET_UP:
+                            handleStopMeetUp(group, chatId);
+                            break;
+                        case HELP_MEET_UP:
+                            handleHelp(chatId);
+                            break;
+                        default:
+                            handleDefault(chatId);
+                            break;
+                    }
+                } catch (IllegalArgumentException e) {
+                    log.debug(Commands.UNHANDLED.toString(), e);
                 }
             }
         } else {
@@ -125,15 +130,16 @@ public class MeetUp extends TelegramLongPollingBot {
                     .map(MeetUp::createKeyboardRow)
                     .collect(Collectors.toList());
             keyboardRows.add(MeetUp.createKeyboardRow("Done"));
-            ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-            replyKeyboardMarkup.setResizeKeyboard(true);
-            replyKeyboardMarkup.setKeyboard(keyboardRows);
-            sendMessage(chatId, "Poll details", replyKeyboardMarkup);
+            ReplyKeyboardMarkup replyKeyboardMarkup = ReplyKeyboardMarkup.builder().keyboard(keyboardRows).build();
+            sendMessage(
+                    SendMessage.builder().text("Poll details").chatId(chatId).replyMarkup(replyKeyboardMarkup).build());
+
             group.setStarted(true);
             groupService.save(group);
-            sendMessage(chatId, getStartMeetUpMessage());
+            sendMessage(SendMessage.builder().text(getStartMeetUpMessage()).chatId(chatId).build());
         } else {
-            sendMessage(chatId, "Already started Scheduled Job for the meetings");
+            sendMessage(SendMessage.builder().text("Already started Scheduled Job for the meetings").chatId(chatId)
+                    .build());
         }
     }
 
@@ -146,7 +152,8 @@ public class MeetUp extends TelegramLongPollingBot {
         if (group != null && group.isStarted()) {
             group.setStarted(false);
             groupService.save(group);
-            sendMessage(chatId, "The scheduled job for the meetings has been stopped");
+            sendMessage(SendMessage.builder().text("The scheduled job for the meetings has been stopped").chatId(chatId)
+                    .build());
         }
     }
 
@@ -158,12 +165,14 @@ public class MeetUp extends TelegramLongPollingBot {
                 .collect(Collectors.joining("\n"));
         StringBuilder message = new StringBuilder("Available commands are: \n");
         message.append(commandsList);
-        sendMessage(chatId, message.toString());
+        sendMessage(SendMessage.builder().chatId(chatId).text(message.toString()).build());
     }
 
     private void handleDefault(long chatId) {
-        sendMessage(chatId, "Unhandled command. Please use '/" + Commands.HELP_MEET_UP.toString().toLowerCase()
-                + "' to see the list of valid commands.");
+        sendMessage(SendMessage.builder().chatId(chatId)
+                .text("Unhandled command. Please use '/" + Commands.HELP_MEET_UP.toString().toLowerCase()
+                        + "' to see the list of valid commands.")
+                .build());
     }
 
     private boolean isAdmin(Update update, Long chatId) {
@@ -176,7 +185,7 @@ public class MeetUp extends TelegramLongPollingBot {
     private void handleOtherMessages(Long chatId, String textMessage, Integer messageId) {
         // check if the message is an url
         if (urlPattern.matcher(textMessage).matches() && (isUrlMalicious(textMessage))) {
-            sendMessage(chatId, "The url " + textMessage + " is malicious", messageId);
+            sendMessage(SendMessage.builder().chatId(chatId).text(textMessage).messageThreadId(messageId).build());
 
         }
     }
@@ -199,26 +208,7 @@ public class MeetUp extends TelegramLongPollingBot {
         return chatAdministrators;
     }
 
-    private void sendMessage(Long chatId, String textMessage) {
-        this.sendMessage(chatId, textMessage, null, null);
-    }
-
-    private void sendMessage(Long chatId, String textMessage, Integer messageId) {
-        this.sendMessage(chatId, textMessage, null, messageId);
-    }
-
-    private void sendMessage(Long chatId, String textMessage, ReplyKeyboard replyMarkup) {
-        this.sendMessage(chatId, textMessage, replyMarkup, null);
-    }
-
-    private void sendMessage(Long chatId, String textMessage, ReplyKeyboard replyMarkup, Integer messageId) {
-        SendMessage message = new SendMessage();
-        message.setChatId(String.valueOf(chatId));
-        message.setText(textMessage);
-        if (replyMarkup != null)
-            message.setReplyMarkup(replyMarkup);
-        if (messageId != null)
-            message.setReplyToMessageId(messageId);
+    private void sendMessage(SendMessage message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {
