@@ -130,7 +130,12 @@ public class MeetUp extends TelegramLongPollingBot {
                     .map(MeetUp::createKeyboardRow)
                     .collect(Collectors.toList());
             keyboardRows.add(MeetUp.createKeyboardRow("Done"));
-            ReplyKeyboardMarkup replyKeyboardMarkup = ReplyKeyboardMarkup.builder().keyboard(keyboardRows).build();
+            ReplyKeyboardMarkup replyKeyboardMarkup = ReplyKeyboardMarkup.builder()
+                    .keyboard(keyboardRows)
+                    .selective(true)
+                    .resizeKeyboard(true)
+                    .oneTimeKeyboard(false)
+                    .build();
             sendMessage(
                     SendMessage.builder().text("Poll details").chatId(chatId).replyMarkup(replyKeyboardMarkup).build());
 
