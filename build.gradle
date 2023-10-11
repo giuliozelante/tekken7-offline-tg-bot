@@ -54,3 +54,9 @@ micronaut {
         deduceEnvironment = true
     }
 }
+
+task buildDockerAndStartBatch {
+    application.mainClass.set('it.giuliozelante.tekken7.offline.tg.bot.batch.Batch')
+    classpath = sourceSets.main.runtimeClasspath
+    finalizedBy nativeOptimizedCompile
+}
