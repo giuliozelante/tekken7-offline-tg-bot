@@ -1,2 +1,3 @@
-rootProject.name='tekken7-offline-tg-bot'
-include 'bot', 'batch'
+
+rootProject.name="tekken7-offline-tg-bot"
+include('batch', 'bot')
