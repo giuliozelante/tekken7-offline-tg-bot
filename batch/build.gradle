@@ -1,11 +1,18 @@
 plugins {
+<<<<<<< HEAD
     id 'application'
     id 'com.github.johnrengelman.shadow'
     id 'org.graalvm.buildtools.native' version '0.9.27'
+=======
+    id 'com.github.johnrengelman.shadow'
+    id 'io.micronaut.application'
+    id 'io.micronaut.aot'
+>>>>>>> f27bdf0 (feat: add batch module for running deployment commands)
     id 'com.github.ben-manes.versions'
     id 'fr.brouillard.oss.gradle.jgitver'
 }
 
+<<<<<<< HEAD
 version = '0.1'
 group = 'it.giuliozelante.tekken7.offline.tg.bot.batch'
 
@@ -26,3 +33,11 @@ graalvmNative {
     }
     toolchainDetection = false
 }
+=======
+version = "0.1"
+group = "it.giuliozelante.tekken7.offline.tg.bot.batch"
+
+application {
+    mainClass.set("it.giuliozelante.tekken7.offline.tg.bot.batch.Batch")
+}
+>>>>>>> f27bdf0 (feat: add batch module for running deployment commands)
