@@ -12,3 +12,21 @@ group = "it.giuliozelante.tekken7.offline.tg.bot.batch"
 application {
     mainClass.set("it.giuliozelante.tekken7.offline.tg.bot.batch.Batch")
 }
+
+micronaut {
+        processing {
+            incremental(true)
+            annotations("it.giuliozelante.tekken7.offline.tg.bot.batch.*")
+        }
+        aot {
+            // Please review carefully the optimizations enabled below
+            // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+            optimizeServiceLoading = false
+            convertYamlToJava = false
+            precomputeOperations = true
+            cacheEnvironment = true
+            optimizeClassLoading = true
+            deduceEnvironment = true
+            optimizeNetty = true
+        }
+    }

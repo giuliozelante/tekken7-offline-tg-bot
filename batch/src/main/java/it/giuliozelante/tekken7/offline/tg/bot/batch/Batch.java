@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,11 +30,14 @@ public class Batch {
         for (String command : commands) {
             String firstCommand;
             Path filePath = Paths.get(command.split(" ")[0]);
-            if(filePath.toAbsolutePath().toFile().exists())
+            if (filePath.toAbsolutePath().toFile().exists())
                 firstCommand = filePath.toAbsolutePath().toString();
             else
                 firstCommand = filePath.toString();
-            ProcessBuilder pb = new ProcessBuilder(Stream.concat(Stream.of(firstCommand), Arrays.stream(Arrays.copyOfRange(command.split(" "),1, command.split( " ").length))).collect(Collectors.toList()));
+            ProcessBuilder pb = new ProcessBuilder(Stream
+                    .concat(Stream.of(firstCommand),
+                            Arrays.stream(Arrays.copyOfRange(command.split(" "), 1, command.split(" ").length)))
+                    .collect(Collectors.toList()));
             pb.redirectErrorStream(true);
             pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
             pb.redirectInput(ProcessBuilder.Redirect.INHERIT);
