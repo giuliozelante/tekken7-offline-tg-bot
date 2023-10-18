@@ -1,0 +1,28 @@
+plugins {
+    id 'application'
+    id 'com.github.johnrengelman.shadow'
+    id 'org.graalvm.buildtools.native' version '0.9.27'
+    id 'com.github.ben-manes.versions'
+    id 'fr.brouillard.oss.gradle.jgitver'
+}
+
+version = '0.1'
+group = 'it.giuliozelante.tekken7.offline.tg.bot.batch'
+
+application {
+    mainClass.set('it.giuliozelante.tekken7.offline.tg.bot.batch.Batch')
+}
+
+dependencies {
+    implementation 'org.projectlombok:lombok:1.18.30',
+            'ch.qos.logback:logback-core:1.4.11',
+            'ch.qos.logback:logback-classic:1.4.11'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+}
+
+graalvmNative {
+    binaries.all {
+        resources.autodetect()
+    }
+    toolchainDetection = false
+}
