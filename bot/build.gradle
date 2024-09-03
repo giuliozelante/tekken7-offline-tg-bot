@@ -12,11 +12,8 @@ application {
 }
 
 dependencies {
-    annotationProcessor 'io.micronaut.data:micronaut-data-processor',
-            'io.micronaut.serde:micronaut-serde-processor'
-    implementation 'io.micronaut:micronaut-http-client',
-            'io.micronaut.data:micronaut-data-hibernate-jpa',
-            'io.micronaut.serde:micronaut-serde-jackson',
+    annotationProcessor 'io.micronaut.data:micronaut-data-processor'
+    implementation 'io.micronaut.data:micronaut-data-hibernate-jpa',
             'io.micronaut.sql:micronaut-jdbc-hikari',
             'org.telegram:telegrambots:6.8.0',
             'p6spy:p6spy:3.9.1'
