@@ -17,4 +17,13 @@ dependencies {
             'ch.qos.logback:logback-core:1.4.11',
             'ch.qos.logback:logback-classic:1.4.11'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // Add these Micronaut dependencies
+    implementation 'io.micronaut:micronaut-core:4.2.3'
+    implementation 'io.micronaut:micronaut-inject:4.2.3'
+}
+
+// Add this configuration to ensure Micronaut AOT works correctly
+micronaut {
+    version '4.2.3'
 }
