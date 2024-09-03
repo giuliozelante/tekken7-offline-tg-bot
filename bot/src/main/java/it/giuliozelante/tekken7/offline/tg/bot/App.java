@@ -11,8 +11,9 @@ public class App {
     public static void main(String[] args) {
         Map<String, String> environmentVariables = System.getenv();
 
-        for (String environmentVariableName : environmentVariables.keySet()) {
-            String environmentVariableValue = environmentVariables.get(environmentVariableName);
+        for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
+            String environmentVariableName = entry.getKey();
+            String environmentVariableValue = entry.getValue();
 
             log.debug(environmentVariableName + " = " + environmentVariableValue);
         }
