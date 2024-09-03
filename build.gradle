@@ -1,10 +1,7 @@
 plugins {
-    id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id 'io.micronaut.application' version '4.1.0'
-    id 'io.micronaut.aot' version '4.1.0'
-    id 'com.github.ben-manes.versions' version '0.47.0'
-    id 'fr.brouillard.oss.gradle.jgitver' version '0.10.0-rc03'
+    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id 'io.micronaut.application' version '4.2.3' apply false
+    id 'io.micronaut.aot' version '4.2.3' apply false
 }
 
 subprojects {
