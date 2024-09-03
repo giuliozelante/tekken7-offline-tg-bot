@@ -91,6 +91,38 @@ micronaut {
         jdkVersion = "21"
     }
 
+    graalvmNative {
+        binaries {
+            main {
+                buildArgs.add('--initialize-at-build-time=ch.qos.logback.classic.Logger')
+                buildArgs.add('--trace-object-instantiation=ch.qos.logback.classic.Logger')
+                buildArgs.add('--initialize-at-run-time=io.netty.util.internal.logging.LocationAwareSlf4JLogger')
+                buildArgs.add('--initialize-at-run-time=io.netty.channel.DefaultChannelPipeline')
+                buildArgs.add('--initialize-at-run-time=io.netty.handler.flow.FlowControlHandler')
+                buildArgs.add('--initialize-at-run-time=io.netty.channel.ChannelHandlerMask')
+                buildArgs.add('--initialize-at-run-time=io.netty.handler.ssl.util.InsecureTrustManagerFactory')
+                buildArgs.add('--initialize-at-run-time=io.netty.handler.codec.http2.Http2StreamChannelBootstrap')
+                buildArgs.add('--initialize-at-run-time=io.netty.handler.ssl.SslHandler')
+                buildArgs.add('--initialize-at-run-time=io.netty.channel.AbstractChannel')
+                buildArgs.add('--initialize-at-run-time=io.netty.handler.codec.http2.Http2ControlFrameLimitEncoder')
+                buildArgs.add('--initialize-at-run-time=io.netty.bootstrap.ChannelInitializerExtensions')
+                buildArgs.add('--initialize-at-run-time=io.netty.channel.socket.oio.OioSocketChannel')
+                buildArgs.add('--initialize-at-run-time=io.netty.channel.DelegatingChannelPromiseNotifier')
+                buildArgs.add('--initialize-at-run-time=io.netty.handler.codec.http2.DefaultHttp2ConnectionDecoder')
+                buildArgs.add('--initialize-at-run-time=io.netty.handler.codec.http2.DefaultHttp2Connection')
+                buildArgs.add('--initialize-at-run-time=io.netty.util.ReferenceCountUtil')
+                buildArgs.add('--initialize-at-run-time=io.netty.util.ResourceLeakDetector')
+                buildArgs.add('--initialize-at-run-time=io.netty.channel.socket.nio.NioSocketChannel')
+                buildArgs.add('--initialize-at-run-time=io.netty.channel.ChannelInitializer')
+            }
+        }
+    }
+
+
+    tasks.named("dockerfileNative") {
+        jdkVersion = "21"
+    }
+
 }
 
 def determineVersion() {
