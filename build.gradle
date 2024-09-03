@@ -47,14 +47,40 @@ micronaut {
         incremental(true)
         annotations('it.giuliozelante.tekken7.offline.tg.bot.*')
     }
-    aot {
-    aot {
-        optimizeServiceLoading = false
-        convertYamlToJava = false
-        precomputeOperations = true
-        cacheEnvironment = true
-        optimizeClassLoading = true
-        deduceEnvironment = true
+
+    dependencies {
+        annotationProcessor("org.projectlombok:lombok")
+        compileOnly("org.projectlombok:lombok")
+        runtimeOnly("ch.qos.logback:logback-classic")
+        annotationProcessor("io.micronaut:micronaut-http-validation")
+        annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+        implementation("io.micronaut.serde:micronaut-serde-jackson")
+        compileOnly("io.micronaut:micronaut-http-client")
+    }
+
+    java {
+        sourceCompatibility = JavaVersion.toVersion("21")
+        targetCompatibility = JavaVersion.toVersion("21")
+    }
+
+    graalvmNative.toolchainDetection = false
+    micronaut {
+        processing {
+            incremental(true)
+            annotations("it.giuliozelante.tekken7.offline.tg.bot.*")
+        }
+        aot {
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+            optimizeServiceLoading = false
+            convertYamlToJava = false
+            precomputeOperations = true
+            cacheEnvironment = true
+            optimizeClassLoading = true
+            deduceEnvironment = true
+            optimizeNetty = true
+            replaceLogbackXml = true
+        }
     }
 
 
@@ -62,14 +88,6 @@ micronaut {
         jdkVersion = "21"
     }
 
-}
-
-def determineVersion() {
-    def gitVersion = versionDetails()
-    def lastTag = gitVersion.lastTag ?: '0.0'
-    def (major, minor) = lastTag.tokenize('.') + [0, 0]
-    def newMinor = (minor.toInteger() ?: 0) + 1
-    return "${major}.${newMinor}"
 }
 
 def determineVersion() {
