@@ -1,3 +1,4 @@
 
 rootProject.name="tekken7-offline-tg-bot"
-
+include 'batch'
+include 'bot'
