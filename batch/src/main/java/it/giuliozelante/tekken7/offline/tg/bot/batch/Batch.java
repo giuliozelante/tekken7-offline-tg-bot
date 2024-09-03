@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Batch {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         Batch batch = new Batch();
         String[] commands = List.of("gradlew clean optimizedDockerBuild",
                 "docker save tekken7-offline-tg-bot:latest > tekken7-offline-tg-bot.tar",
@@ -23,6 +22,9 @@ public class Batch {
             batch.runCommandsInSeries(commands);
         } catch (InterruptedException | IOException e) {
             log.error(e.getMessage(), e);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
 
     }
