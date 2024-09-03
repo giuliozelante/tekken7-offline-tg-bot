@@ -17,6 +17,10 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok")
         compileOnly("org.projectlombok:lombok")
         runtimeOnly("ch.qos.logback:logback-classic")
+        annotationProcessor("io.micronaut:micronaut-http-validation")
+        annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+        implementation("io.micronaut.serde:micronaut-serde-jackson")
+        compileOnly("io.micronaut:micronaut-http-client")
     }
 
     java {
@@ -31,8 +35,8 @@ subprojects {
             annotations("it.giuliozelante.tekken7.offline.tg.bot.*")
         }
         aot {
-            // Please review carefully the optimizations enabled below
-            // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
             optimizeServiceLoading = false
             convertYamlToJava = false
             precomputeOperations = true
@@ -40,7 +44,14 @@ subprojects {
             optimizeClassLoading = true
             deduceEnvironment = true
             optimizeNetty = true
+            replaceLogbackXml = true
         }
     }
+
+
+    tasks.named("dockerfileNative") {
+        jdkVersion = "21"
+    }
+
 }
 
