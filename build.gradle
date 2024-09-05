@@ -2,12 +2,14 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
     id 'io.micronaut.application' version '4.4.2' apply false
     id 'io.micronaut.aot' version '4.4.2' apply false
+    id 'com.palantir.git-version' version '3.1.0'
 }
 
 subprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'io.micronaut.application'
     apply plugin: 'io.micronaut.aot'
+    apply plugin: 'com.palantir.git-version'
 
     repositories {
         mavenCentral()
@@ -27,6 +29,8 @@ subprojects {
         sourceCompatibility = JavaVersion.toVersion("21")
         targetCompatibility = JavaVersion.toVersion("21")
     }
+
+    version = determineVersion()
 
     graalvmNative.toolchainDetection = false
     micronaut {
@@ -53,5 +57,13 @@ subprojects {
         jdkVersion = "21"
     }
 
+}
+
+def determineVersion() {
+    def gitVersion = versionDetails()
+    def lastTag = gitVersion.lastTag ?: '0.0'
+    def (major, minor) = lastTag.tokenize('.') + [0, 0]
+    def newMinor = (minor.toInteger() ?: 0) + 1
+    return "${major}.${newMinor}"
 }
 

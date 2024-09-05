@@ -1,10 +1,11 @@
 plugins {
+        id 'application'
         id 'com.github.johnrengelman.shadow'
         id 'io.micronaut.application'
         id 'io.micronaut.aot'
+        id 'com.palantir.git-version'
 }
 
-version = "0.1"
 group = "it.giuliozelante.tekken7.offline.tg.bot"
 
 application {
