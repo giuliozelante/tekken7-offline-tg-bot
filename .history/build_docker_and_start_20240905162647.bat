@@ -25,5 +25,6 @@ ssh -p %SSH_PORT% %SSH_USER%@%SSH_HOST% "sh %REMOTE_DIR%/deploy.sh"
 
 REM Clean up local files
 del %DOCKER_IMAGE_TAR%
+del deploy.sh
 
 echo Deployment completed. Check the remote server for the running container.
