@@ -1,9 +1,9 @@
 plugins {
-    id 'application'
-    id 'com.github.johnrengelman.shadow'
-    id 'io.micronaut.application'
-    id 'io.micronaut.aot'
-    id 'com.palantir.git-version'
+        id 'application'
+        id 'com.github.johnrengelman.shadow'
+        id 'io.micronaut.application'
+        id 'io.micronaut.aot'
+        id 'com.palantir.git-version'
 }
 
 group = "it.giuliozelante.tekken7.offline.tg.bot"

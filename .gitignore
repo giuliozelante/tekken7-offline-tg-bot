@@ -97,3 +97,6 @@ deploy.sh
 
 # Environment variables
 .env
+
+# History
+.history/
