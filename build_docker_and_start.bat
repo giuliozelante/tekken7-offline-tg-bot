@@ -1,12 +1,5 @@
 @echo off
 
-REM Check for changes in the code using git
-REM git diff --quiet HEAD
-REM if %errorlevel% equ 0 (
-REM     echo No changes detected. Skipping Docker image build, save, and transfer.
-REM     exit /b 0
-REM )
-
 REM Load environment variables from .env file
 for /f "tokens=*" %%a in (.env) do (
     set %%a
@@ -28,26 +21,15 @@ if %errorlevel% neq 0 (
 )
 
 REM Save Docker image to tar file
-call docker save tekken7-offline-tg-bot:latest > %DOCKER_IMAGE_TAR%
+docker save bot:latest > %DOCKER_IMAGE_TAR%
 
-REM Transfer tar file to remote server
-call scp tekken7-offline-tg-bot.tar root@192.168.1.105:/home/gzelante
+REM Transfer tar file and deploy script to remote server
+scp -P %SSH_PORT% %DOCKER_IMAGE_TAR% deploy.sh %SSH_USER%@%SSH_HOST%:%REMOTE_DIR%
 
-REM SSH into remote server
-call ssh root@192.168.1.105 "<< EOF
+REM Execute the deploy script on the remote server
+ssh -p %SSH_PORT% %SSH_USER%@%SSH_HOST% "sh %REMOTE_DIR%/deploy.sh"
 
-#REM Kill existing Docker container
-docker kill t7_offline_tg_bot
+REM Clean up local files
+del %DOCKER_IMAGE_TAR%
 
-#REM Load Docker image from tar file
-docker load -i /home/gzelante/tekken7-offline-tg-bot.tar
-
-#REM Run Docker container with environment variables
-docker run -d -e T7_OFFLINE_BOT_DB_PASSWORD \
-                -e T7_OFFLINE_BOT_DB_USERNAME \
-                -e T7_OFFLINE_BOT_TOKEN \
-                -e T7_OFFLINE_BOT_USERNAME \
-                -e VIRUS_TOTAL_API_KEY \
-                --rm --name t7_offline_tg_bot -it tekken7-offline-tg-bot:latest \
-                -v /var/logs/tekken-offline-tg-bot:/var/logs/tekken-offline-tg-bot
-EOF"
+echo Deployment completed. Check the remote server for the running container.
