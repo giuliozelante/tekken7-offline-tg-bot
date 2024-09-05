@@ -21,6 +21,12 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+REM Check if the build was successful
+if %errorlevel% neq 0 (
+    echo Docker build failed. Please check your Dockerfile and try again.
+    exit /b 1
+)
+
 REM Save Docker image to tar file
 call docker save tekken7-offline-tg-bot:latest > %DOCKER_IMAGE_TAR%
 
