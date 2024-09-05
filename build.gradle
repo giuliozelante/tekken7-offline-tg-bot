@@ -98,3 +98,11 @@ def determineVersion() {
     return "${major}.${newMinor}"
 }
 
+def determineVersion() {
+    def gitVersion = versionDetails()
+    def lastTag = gitVersion.lastTag ?: '0.0'
+    def (major, minor) = lastTag.tokenize('.') + [0, 0]
+    def newMinor = (minor.toInteger() ?: 0) + 1
+    return "${major}.${newMinor}"
+}
+
