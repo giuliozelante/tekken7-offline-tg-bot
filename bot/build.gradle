@@ -16,29 +16,12 @@ dependencies {
     annotationProcessor 'io.micronaut.data:micronaut-data-processor'
     implementation 'io.micronaut.data:micronaut-data-hibernate-jpa',
             'io.micronaut.sql:micronaut-jdbc-hikari',
-            'org.telegram:telegrambots:6.8.0',
+            'org.telegram:telegrambots:6.9.7.1',
             'p6spy:p6spy:3.9.1'
     runtimeOnly 'com.h2database:h2',
                 'org.yaml:snakeyaml:2.2'
 }
 
-tasks.named("buildLayers") {
-    copy {
-        from "${rootProject.projectDir}/.env"
-        into 'build/docker/main/layers'
-    }
-}
-
 tasks.named("optimizedDockerBuild") {
     images.set(["${rootProject.name}:${project.version}", "${rootProject.name}:latest"])
-}
-
-tasks.named("dockerfile") {
-    baseImage = 'openjdk:21-jdk-slim'
-    // Uncomment and edit the following block if needed
-    // editDockerfile {
-    //     after('COPY --link layers/resources /home/app/resources') {
-    //         insert('COPY --link layers/.env /home/app/.env')
-    //     }
-    // }
 }

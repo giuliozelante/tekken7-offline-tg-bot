@@ -48,7 +48,7 @@ public class PollService {
     private List<String> generateNextWeekdayOptions() {
         LocalDate today = LocalDate.now();
         List<String> nextWeekdays = new ArrayList<>();
-        DayOfWeek[] daysToCheck = {DayOfWeek.TUESDAY, DayOfWeek.SUNDAY};
+        DayOfWeek[] daysToCheck = {DayOfWeek.TUESDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY};
 
         for (DayOfWeek day : daysToCheck) {
             LocalDate nextDay = today.with(TemporalAdjusters.nextOrSame(day));
@@ -62,66 +62,6 @@ public class PollService {
         }
 
         return nextWeekdays;
-    }
-
-    public void editOrCreatePoll(TelegramGroup group, MeetUp meetUp) {
-        try {
-            // Ask user for poll title
-            String pollTitle = askUserForInput("Please enter the title of the poll:");
-
-            // Ask user for options (weekdays)
-            List<String> weekdays = generateNextWeekdayOptions();
-            List<String> optionsWithLocations = new ArrayList<>();
-            for (String day : weekdays) {
-                String additionalText = askUserForInput("Enter additional text for " + day + " (e.g., location):");
-                optionsWithLocations.add(day + " " + additionalText);
-            }
-
-            // Create InlineKeyboardMarkup for user interaction
-            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-            List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-            for (String option : optionsWithLocations) {
-                InlineKeyboardButton button = new InlineKeyboardButton();
-                button.setText(option);
-                button.setCallbackData(option);
-                keyboard.add(Collections.singletonList(button));
-            }
-            inlineKeyboardMarkup.setKeyboard(keyboard);
-
-            // Create or edit poll
-            SendPoll sendPoll = new SendPoll(String.valueOf(group.getChatId()), pollTitle, optionsWithLocations);
-            sendPoll.setIsAnonymous(false);
-            sendPoll.setAllowMultipleAnswers(true);
-            sendPoll.setReplyMarkup(inlineKeyboardMarkup);
-
-            Message pollMessage = meetUp.execute(sendPoll);
-            log.info("Poll with id {} has been created or edited", pollMessage.getMessageId());
-
-            // Pin the poll message
-            PinChatMessage pinChatMessage = new PinChatMessage(String.valueOf(group.getChatId()), pollMessage.getMessageId());
-            boolean pinned = meetUp.execute(pinChatMessage);
-            if (pinned) {
-                log.info("Poll with id {} has been pinned", pollMessage.getMessageId());
-            } else {
-                log.warn("Poll with id {} has NOT been pinned", pollMessage.getMessageId());
-            }
-
-            // Save or update poll in repository
-            Poll poll = new Poll();
-            poll.setMessageId(pollMessage.getMessageId().longValue());
-            poll.setTelegramGroup(group);
-            poll.setActive(true);
-            pollRepository.save(poll);
-
-        } catch (TelegramApiException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    private String askUserForInput(String prompt) {
-        // Placeholder for user input logic
-        // This method should be implemented to interact with the user and get input
-        return "User input for " + prompt;
     }
 
     public void startPoll(TelegramGroup group, MeetUp meetUp) {
