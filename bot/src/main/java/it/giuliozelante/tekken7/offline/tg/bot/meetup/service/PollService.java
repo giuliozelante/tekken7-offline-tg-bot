@@ -19,17 +19,51 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
+import java.time.DayOfWeek;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Locale;
+
 @Singleton
 @Slf4j
 public class PollService {
     @Inject
     private PollRepository pollRepository;
 
-    private final List<String> options = List.of("Sabato", "Domenica");
+    private List<String> options;
+
+    public PollService() {
+        this.options = generateNextWeekdayOptions().stream()
+            .map(day -> {
+                String location = day.toLowerCase().contains("martedì") ? "(Parrot Sushi Lan)" : "(Rampage)";
+                return day + " " + location;
+            })
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    private List<String> generateNextWeekdayOptions() {
+        LocalDate today = LocalDate.now();
+        List<String> nextWeekdays = new ArrayList<>();
+        DayOfWeek[] daysToCheck = {DayOfWeek.TUESDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY};
+
+        for (DayOfWeek day : daysToCheck) {
+            LocalDate nextDay = today.with(TemporalAdjusters.nextOrSame(day));
+            if (nextDay.getMonth().equals(java.time.Month.SEPTEMBER)) {
+                if (!nextDay.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+                    nextWeekdays.add(nextDay.format(DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.ITALIAN)));
+                }
+            } else {
+                nextWeekdays.add(nextDay.format(DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.ITALIAN)));
+            }
+        }
+
+        return nextWeekdays;
+    }
 
     public void startPoll(TelegramGroup group, MeetUp meetUp) {
         try {
-            SendPoll meetingDay = new SendPoll(String.valueOf(group.getChatId()), "Quando ci vediamo al Rampage?",
+            SendPoll meetingDay = new SendPoll(String.valueOf(group.getChatId()), "Quando ci vediamo?",
                     options);
             meetingDay.setIsAnonymous(false);
             meetingDay.setAllowMultipleAnswers(true);

@@ -22,7 +22,7 @@ subprojects {
         annotationProcessor("io.micronaut:micronaut-http-validation")
         annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
         implementation("io.micronaut.serde:micronaut-serde-jackson")
-        compileOnly("io.micronaut:micronaut-http-client")
+        implementation("io.micronaut:micronaut-http-client")
     }
 
     java {
