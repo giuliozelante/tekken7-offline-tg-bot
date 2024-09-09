@@ -18,6 +18,6 @@ public interface VirusTotalApiClient {
     @Post("urls")
     public Response scanUrl(String url);
 
-    @Get("analyses/{id}")
+    @Get("/analyses/{id}")
     public Response getUrlOrFileAnalysis(String id);
 }

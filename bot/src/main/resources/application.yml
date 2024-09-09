@@ -23,7 +23,7 @@ jpa:
 virustotal:
   api:
     key: ${VIRUS_TOTAL_API_KEY}
-    root: https://www.virustotal.com/api/v3/
+    root: https://www.virustotal.com/api/v3
 telegram.bot:
   token: ${T7_OFFLINE_BOT_TOKEN}
   username: ${T7_OFFLINE_BOT_USERNAME}
