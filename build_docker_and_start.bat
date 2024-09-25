@@ -17,10 +17,8 @@ if %errorlevel% neq 0 (
 REM Save Docker image to tar file
 docker save tekken7-offline-tg-bot:latest > tekken7-offline-tg-bot.tar
 
-REM Transfer tar file and deploy script to remote server
-scp -P %SSH_PORT% %DOCKER_IMAGE_TAR% %SSH_USER%@%SSH_HOST%:%REMOTE_DIR%
+REM Transfer tar file to remote server
+call scp tekken7-offline-tg-bot.tar root@192.168.1.105:/home/gzelante
 
-REM Execute the deploy script on the remote server
-ssh -p %SSH_PORT% %SSH_USER%@%SSH_HOST% "/etc/local.d/start_t7_offline_bot.start"
-
-echo Deployment completed. Check the remote server for the running container.
+REM Transfer docker-compose.yml to remote server
+call scp docker-compose.yml root@192.168.1.105:/home/gzelante
