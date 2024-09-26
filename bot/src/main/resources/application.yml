@@ -4,7 +4,7 @@ micronaut:
 datasources:
   default:
     name: db
-    url: jdbc:p6spy:h2:tcp://${T7_OFFLINE_BOT_DB_URL:192.168.1.105}/~/db;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:p6spy:h2:tcp://${T7_OFFLINE_BOT_DB_URL:localhost}/~/db;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: ${JDBC_DRIVER:com.p6spy.engine.spy.P6SpyDriver}
     username: ${T7_OFFLINE_BOT_DB_USERNAME}
     password: ${T7_OFFLINE_BOT_DB_PASSWORD}
