@@ -1,16 +1,19 @@
-version: '3.7'
+version: "3.7"
 
 services:
   h2:
-    image: h2
+    image: oscarfonts/h2
     ports:
-      - "8082:8082"
+      - "8081:8081"
+      - "1521:1521"
     environment:
       - H2_USER=T7_OFFLINE_BOT_DB_USERNAME
       - H2_PASS=T7_OFFLINE_BOT_DB_PASSWORD
     volumes:
-      - /home/gzelante/db.mv.db:/data/h2  # Mount the database file to the H2 container
+      - ./db.mv.db:/opt/h2-data/db.mv.db
     restart: always
+    networks:
+      - host-network
 
   tekken7-offline-tg-bot:
     image: tekken7-offline-tg-bot:latest
@@ -20,4 +23,14 @@ services:
       - T7_OFFLINE_BOT_TOKEN
       - T7_OFFLINE_BOT_USERNAME
       - VIRUS_TOTAL_API_KEY
-    restart: always
+    networks:
+      - host-network
+
+networks:
+  host-network:
+    driver: bridge
+    name: host-network
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
