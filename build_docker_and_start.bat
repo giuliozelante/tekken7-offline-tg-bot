@@ -1,11 +1,11 @@
 @echo off
 
 REM Check for changes in the code using git
-git diff --quiet HEAD
-if %errorlevel% equ 0 (
-    echo No changes detected. Skipping Docker image build, save, and transfer.
-    exit /b 0
-)
+REM git diff --quiet HEAD
+REM if %errorlevel% equ 0 (
+REM     echo No changes detected. Skipping Docker image build, save, and transfer.
+REM     exit /b 0
+REM )
 
 REM Load environment variables from .env file
 for /f "tokens=*" %%a in (.env) do (
@@ -27,4 +27,4 @@ docker save tekken7-offline-tg-bot:latest > %DOCKER_IMAGE_TAR%
 REM Transfer tar file and docker-compose.yml to remote server
 call sshpass -p %SSH_PASSWORD% scp -P %SSH_PORT% %DOCKER_IMAGE_TAR% docker-compose.yml %SSH_USER%@%SSH_HOST%:%REMOTE_DIR%
 
-call shpass -p %SSH_PASSWORD% ssh -p %SSH_PORT% %DOCKER_IMAGE_TAR% "/etc/local.d/start_t7_offline_bot.start"
+call sshpass -p %SSH_PASSWORD% ssh -p %SSH_PORT% %DOCKER_IMAGE_TAR% "/etc/local.d/start_t7_offline_bot.start"
