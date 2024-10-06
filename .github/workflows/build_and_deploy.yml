@@ -13,24 +13,28 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           distribution: 'temurin'
           java-version: '21'
 
       - name: Build and clean Docker image
-        run: ./gradlew clean optimizedDockerBuild --info --stacktrace
-
-      - name: List Docker images
+        run: ./gradlew clean optimizedDockerBuild
+      - name: Check Docker images
         run: docker images
-
-      - name: Get Docker image ID
-        id: get_image_id
-        run: echo "IMAGE_ID=$(docker images -q | head -n 1)" >> $GITHUB_OUTPUT
-
       - name: Save Docker image to tar file
-        run: docker save ${{ steps.get_image_id.outputs.IMAGE_ID }} > tekken7-offline-tg-bot.tar
-
+        run: docker save tekken7-offline-tg-bot:latest > tekken7-offline-tg-bot.tar
+      - name: Transfer tar file to remote server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USERNAME }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          port: ${{ secrets.REMOTE_PORT }}
+          source: 'tekken7-offline-tg-bot.tar'
+          target: /home/gzelante
       - name: SSH into remote server
         uses: appleboy/ssh-action@master
         with:
