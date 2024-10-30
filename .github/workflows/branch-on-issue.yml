@@ -14,18 +14,14 @@
          - name: Determine branch type
            id: branch_type
            run: |
-             if [[ "${{ github.event.issue.labels }}" == *"feature"* ]]; then
+             if [[ "${{ github.event.issue.labels }}" == *"enhancement"* || "${{ github.event.issue.labels }}" == *"bug"* ]]; then
                echo "type=feature" >> $GITHUB_ENV
-             elif [[ "${{ github.event.issue.labels }}" == *"release"* ]]; then
-               echo "type=release" >> $GITHUB_ENV
-             elif [[ "${{ github.event.issue.labels }}" == *"hotfix"* ]]; then
-               echo "type=hotfix" >> $GITHUB_ENV
              else
                echo "type=other" >> $GITHUB_ENV
              fi
 
          - name: Create branch
-           if: env.type != 'other'
+           if: env.type == 'feature'
            env:
              ISSUE_NUMBER: ${{ github.event.issue.number }}
              ISSUE_TITLE: ${{ github.event.issue.title }}
