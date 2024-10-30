@@ -72,9 +72,6 @@ Thumbs.db
 out/
 target/
 
-# Environment files
-*.env
-
 # Database files
 *.db
 
@@ -94,9 +91,6 @@ target/
 # Other
 bin/
 deploy.sh
-
-# Environment variables
-.env
 
 # History
 .history/

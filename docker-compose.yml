@@ -15,20 +15,12 @@ services:
 
   tekken7-offline-tg-bot:
     image: tekken7-offline-tg-bot:latest
-    environment:
-      - T7_OFFLINE_BOT_DB_PASSWORD
-      - T7_OFFLINE_BOT_DB_USERNAME
-      - T7_OFFLINE_BOT_TOKEN
-      - T7_OFFLINE_BOT_USERNAME
-      - VIRUS_TOTAL_API_KEY
+    ports:
+      - '8080:8080'
+    env_file: ./.env
     networks:
       - host-network
 
 networks:
   host-network:
     driver: bridge
-    name: host-network
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.20.0.0/16

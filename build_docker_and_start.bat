@@ -13,7 +13,7 @@ for /f "tokens=*" %%a in (.env) do (
 )
 
 REM Build and clean Docker image
-call gradlew clean optimizedDockerBuild
+call gradlew bot:clean bot:optimizedDockerBuild
 
 REM Check if the build was successful
 if %errorlevel% neq 0 (
@@ -22,9 +22,8 @@ if %errorlevel% neq 0 (
 )
 
 REM Save Docker image to tar file
-docker save tekken7-offline-tg-bot:latest > %DOCKER_IMAGE_TAR%
+call docker save tekken7-offline-tg-bot:latest > %DOCKER_IMAGE_TAR%
 
 REM Transfer tar file and docker-compose.yml to remote server
-call sshpass -p %SSH_PASSWORD% scp -P %SSH_PORT% %DOCKER_IMAGE_TAR% docker-compose.yml %SSH_USER%@%SSH_HOST%:%REMOTE_DIR%
-
-call sshpass -p %SSH_PASSWORD% ssh -p %SSH_PORT% %DOCKER_IMAGE_TAR% "/etc/local.d/start_t7_offline_bot.start"
+REM call sshpass -p %SSH_PASSWORD% scp -P %SSH_PORT% %DOCKER_IMAGE_TAR% docker-compose.yml %SSH_USER%@%SSH_HOST%:%REMOTE_DIR%
+REM call sshpass -p %SSH_PASSWORD% ssh -p %SSH_PORT% %DOCKER_IMAGE_TAR% "/etc/local.d/start_t7_offline_bot.start"
