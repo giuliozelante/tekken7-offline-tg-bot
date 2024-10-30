@@ -46,7 +46,7 @@ public class BotRegistryService implements ApplicationEventListener<StartupEvent
         }
     }
 
-    @Scheduled(cron = "0 9 * * MON", zoneId = "Europe/Paris")
+    @Scheduled(cron = "0 9 * * THU", zoneId = "Europe/Paris")
     protected void startPolls() {
         Iterable<TelegramGroup> groups = groupService.findAll();
         StreamSupport.stream(groups.spliterator(), true).forEach(group -> pollService.startPoll(group, meetUp));
