@@ -9,15 +9,14 @@
      create_issue_branch_job:
        runs-on: ubuntu-latest
        steps:
+         - name: Check out repository
+           uses: actions/checkout@v4.2.2
          - name: Create issue branch
-           env:
-             number: ${{ github.event.issue.number }}
-             title: ${{ github.event.issue.title }}
            run: |
-             title=${title// /-}
-             branchname=feature/$number-${title,,}
-             git switch -c "$branchname"
-             git config --global user.name 'github-actions'
-             git config --global user.email \
-                 '41898282+github-actions[bot]@users.noreply.github.com'
-             git push -u origin "$branchname"
+              git config user.name 'github-actions'
+              git config user.email '41898282+github-actions[bot]@users.noreply.github.com'   
+      
+              title=${title// /-}
+              branchname=feature/$number-${title,,}
+              git switch -c "$branchname"
+              git push -u origin "$branchname"
