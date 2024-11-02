@@ -12,6 +12,9 @@
          - name: Check out repository
            uses: actions/checkout@v4.2.2
          - name: Create issue branch
+           env:
+             number: ${{ github.event.issue.number }}
+             title: ${{ github.event.issue.title }}
            run: |
               git config user.name 'github-actions'
               git config user.email '41898282+github-actions[bot]@users.noreply.github.com'   
