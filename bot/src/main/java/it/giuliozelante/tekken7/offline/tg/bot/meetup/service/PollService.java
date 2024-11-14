@@ -52,13 +52,7 @@ public class PollService {
 
         for (DayOfWeek day : daysToCheck) {
             LocalDate nextDay = today.with(TemporalAdjusters.nextOrSame(day));
-            if (nextDay.getMonth().equals(java.time.Month.SEPTEMBER)) {
-                if (!nextDay.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
-                    nextWeekdays.add(nextDay.format(DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.ITALIAN)));
-                }
-            } else {
-                nextWeekdays.add(nextDay.format(DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.ITALIAN)));
-            }
+            nextWeekdays.add(nextDay.format(DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.ITALIAN)));
         }
 
         return nextWeekdays;
@@ -129,5 +123,25 @@ public class PollService {
 
     public void updateAll(List<Poll> list) {
         this.pollRepository.updateAll(list);
+    }
+
+    public void handleDaySelection(String callbackData) {
+        // Extract the day from the callback data
+        String selectedDay = callbackData.replace("day_", "");
+
+        // Prompt the user to input a location for the selected day
+        sendMessage(chatId, "Please enter the location for " + selectedDay + ":");
+    }
+
+    public void handleLocationInput(String location, String selectedDay) {
+        // Store the location for the selected day
+        userSelections.put(selectedDay, location);
+
+        // Confirm the input to the user
+        sendMessage(chatId, "Location for " + selectedDay + " set to: " + location);
+    }
+
+    public void editPoll(TelegramGroup group, MeetUp meetUp) {
+        // Implement the logic to edit the poll
     }
 }

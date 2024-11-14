@@ -71,6 +71,9 @@ public class MeetUp extends TelegramLongPollingBot {
                     case "start_meet_up_poll":
                         handleStartMeetUpPoll(group);
                         break;
+                    case "edit_meet_up_poll":
+                        editMeetUpPoll(group);
+                        break;
                     case "stop_meet_up":
                         handleStopMeetUp(group, chatId);
                         break;
@@ -116,6 +119,10 @@ public class MeetUp extends TelegramLongPollingBot {
     private void handleStartMeetUpPoll(TelegramGroup group) {
         this.pollService.stopPoll(group, this);
         this.pollService.startPoll(group, this);
+    }
+
+    private void editMeetUpPoll(TelegramGroup group) {
+        this.pollService.editPoll(group, this);
     }
 
     private void handleStopMeetUp(TelegramGroup group, long chatId) {

@@ -121,8 +121,9 @@ micronaut {
 
     tasks.named("dockerfileNative") {
         jdkVersion = "21"
-    }
+        }
 
+    }
 }
 
 def determineVersion() {
