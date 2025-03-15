@@ -24,7 +24,9 @@ dependencies {
             'io.micronaut.serde:micronaut-serde-jackson',
             'io.micronaut.sql:micronaut-jdbc-hikari',
             'org.telegram:telegrambots:6.8.0',
-            'p6spy:p6spy:3.9.1'
+            'p6spy:p6spy:3.9.1',
+            'edu.cmu.sphinx:sphinx4-core:5prealpha',
+            'edu.cmu.sphinx:sphinx4-data:5prealpha'
     compileOnly  'org.projectlombok:lombok'
     runtimeOnly 'ch.qos.logback:logback-classic',
             'com.h2database:h2',
