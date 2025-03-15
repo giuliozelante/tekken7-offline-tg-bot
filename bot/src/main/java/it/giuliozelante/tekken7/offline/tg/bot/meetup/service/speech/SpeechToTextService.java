@@ -100,7 +100,7 @@ public class SpeechToTextService {
      * @throws IOException If an I/O error occurs
      */
     private File createTempFile(InputStream inputStream) throws IOException {
-        Path tempFilePath = Files.createTempFile("voice_message_", ".ogg");
+        Path tempFilePath = Files.createTempFile("voice_message_", ".wav");
         Files.copy(inputStream, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
         return tempFilePath.toFile();
     }
