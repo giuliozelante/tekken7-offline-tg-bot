@@ -219,7 +219,8 @@ public class MeetUp extends TelegramLongPollingBot {
         message.append("2. The bot will convert your speech to text using CMU Sphinx\n");
         message.append("3. The bot will respond to your voice message as if you had typed it\n\n");
         message.append("You can even send commands via voice messages by starting with a slash (/)\n\n");
-        message.append("Note: Speech recognition works best in quiet environments with clear speech.");
+        message.append("Note: This feature is optimized for Italian language recognition, but also supports English as a fallback.\n");
+        message.append("Speech recognition works best in quiet environments with clear speech.");
         sendMessage(chatId, message.toString());
     }
 

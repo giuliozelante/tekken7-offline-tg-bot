@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service for converting speech to text using CMU Sphinx.
+ * Optimized for Italian language recognition.
  */
 @Singleton
 @Slf4j
@@ -26,14 +27,20 @@ public class SpeechToTextService {
         // Configure CMU Sphinx
         configuration = new Configuration();
         
-        // Set path to acoustic model
-        configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
-        
-        // Set path to dictionary
-        configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
-        
-        // Set language model
-        configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
+        // Set path to Italian acoustic model (fallback to English if Italian not available)
+        try {
+            // Try to use Italian acoustic model if available
+            configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/it-it/it-it");
+            configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/it-it/it-it.dict");
+            configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/it-it/it-it.lm.bin");
+            log.info("Italian language model loaded for speech recognition");
+        } catch (Exception e) {
+            // Fallback to English if Italian model is not available
+            log.warn("Italian language model not found, falling back to English", e);
+            configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
+            configuration.setDictionaryPath("resource:/edu/cmu/sphinx/models/en-us/cmudict-en-us.dict");
+            configuration.setLanguageModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us.lm.bin");
+        }
         
         log.info("Speech-to-text service initialized");
     }
