@@ -14,7 +14,7 @@ application {
 }
 
 dependencies {
-    // Minimal Micronaut dependencies
+    // Minimal Micronaut dependencies with explicit versions
     implementation 'io.micronaut:micronaut-core:4.2.3'
     implementation 'io.micronaut:micronaut-inject:4.2.3'
     
@@ -25,4 +25,10 @@ dependencies {
 // Configure Micronaut for the batch module
 micronaut {
     version '4.2.3'
+    
+    runtime("netty")
+    processing {
+        incremental(true)
+        annotations("it.giuliozelante.tekken7.offline.tg.bot.batch.*")
+    }
 }

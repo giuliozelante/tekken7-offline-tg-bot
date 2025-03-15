@@ -10,6 +10,7 @@ group = "it.giuliozelante.tekken7.offline.tg.bot"
 
 repositories {
     mavenCentral()
+    maven { url "https://cmusphinx.github.io/maven/" }
 }
 
 application {
@@ -17,14 +18,14 @@ application {
 }
 
 dependencies {
-    annotationProcessor 'io.micronaut.data:micronaut-data-processor'
-    annotationProcessor 'io.micronaut.serde:micronaut-serde-processor'
-    annotationProcessor 'io.micronaut:micronaut-http-validation'
+    annotationProcessor 'io.micronaut.data:micronaut-data-processor:4.4.2'
+    annotationProcessor 'io.micronaut.serde:micronaut-serde-processor:2.8.2'
+    annotationProcessor 'io.micronaut:micronaut-http-validation:4.4.2'
     
-    implementation 'io.micronaut:micronaut-http-client'
-    implementation 'io.micronaut.serde:micronaut-serde-jackson'
-    implementation 'io.micronaut.data:micronaut-data-hibernate-jpa'
-    implementation 'io.micronaut.sql:micronaut-jdbc-hikari'
+    implementation 'io.micronaut:micronaut-http-client:4.4.2'
+    implementation 'io.micronaut.serde:micronaut-serde-jackson:2.8.2'
+    implementation 'io.micronaut.data:micronaut-data-hibernate-jpa:4.4.2'
+    implementation 'io.micronaut.sql:micronaut-jdbc-hikari:5.4.2'
     
     implementation 'org.telegram:telegrambots:6.8.0'
     implementation 'org.telegram:telegrambots-abilities:6.8.0'
@@ -52,7 +53,7 @@ dependencies {
     
     implementation 'p6spy:p6spy:3.9.1'
     
-    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.h2database:h2:2.2.224'
     
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.3'

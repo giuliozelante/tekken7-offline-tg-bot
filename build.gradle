@@ -19,8 +19,8 @@ subprojects {
     // Common dependencies for all subprojects
     dependencies {
         // Lombok for all projects
-        annotationProcessor 'org.projectlombok:lombok'
-        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok:1.18.30'
+        compileOnly 'org.projectlombok:lombok:1.18.30'
         
         // Logging for all projects
         implementation 'org.slf4j:slf4j-api:2.0.7'
@@ -40,12 +40,14 @@ subprojects {
     graalvmNative.toolchainDetection = false
 
     micronaut {
+        version = '4.2.3'
+        
         processing {
             incremental(true)
             annotations("it.giuliozelante.tekken7.offline.tg.bot.*")
         }
         
-        version = determineVersion()
+        runtime("netty")
         
         aot {
             // Please review carefully the optimizations enabled below
