@@ -1,14 +1,19 @@
 package it.giuliozelante.tekken7.offline.tg.bot.meetup;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatAdministrators;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.Voice;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -24,6 +29,7 @@ import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.CommandService;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.GroupService;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.PollService;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.VirusTotalApiClient;
+import it.giuliozelante.tekken7.offline.tg.bot.meetup.service.speech.SpeechToTextService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.Getter;
@@ -45,50 +51,123 @@ public class MeetUp extends TelegramLongPollingBot {
     protected PollService pollService;
     @Inject
     protected CommandService commandService;
-
     @Inject
     protected VirusTotalApiClient virusTotalApiClient;
+    @Inject
+    protected SpeechToTextService speechToTextService;
+    
     private final Pattern URL_PATTERN = Pattern.compile(
             "[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)");
 
     @Override
     @Transactional
     public void onUpdateReceived(Update update) {
-        if (!update.hasMessage() || !update.getMessage().hasText()) {
+        if (!update.hasMessage()) {
             return;
         }
 
         long chatId = update.getMessage().getChatId();
         TelegramGroup group = groupService.findByChatId(chatId).orElse(null);
-        String textMessage = update.getMessage().getText();
-        if (update.getMessage().isCommand()) {
-            if (isAdmin(update, chatId)) {
-                textMessage = textMessage.substring(1);
-                switch (textMessage) {
-                    case "start_meet_up":
-                        handleStartMeetUp(group, chatId);
-                        break;
-                    case "start_meet_up_poll":
-                        handleStartMeetUpPoll(group);
-                        break;
-                    case "edit_meet_up_poll":
-                        editMeetUpPoll(group);
-                        break;
-                    case "stop_meet_up":
-                        handleStopMeetUp(group, chatId);
-                        break;
-                    case "help_meet_up":
-                        handleHelp(chatId);
-                        break;
-                    default:
-                        handleDefault(chatId);
-                        break;
-                }
-            }
-        } else {
-            handleOtherMessages(chatId, textMessage, update.getMessage().getMessageId());
+        
+        // Handle voice messages
+        if (update.getMessage().hasVoice()) {
+            handleVoiceMessage(update, chatId);
+            return;
         }
+        
+        // Handle text messages
+        if (update.getMessage().hasText()) {
+            String textMessage = update.getMessage().getText();
+            if (update.getMessage().isCommand()) {
+                if (isAdmin(update, chatId)) {
+                    textMessage = textMessage.substring(1);
+                    switch (textMessage) {
+                        case "start_meet_up":
+                            handleStartMeetUp(group, chatId);
+                            break;
+                        case "start_meet_up_poll":
+                            handleStartMeetUpPoll(group);
+                            break;
+                        case "edit_meet_up_poll":
+                            editMeetUpPoll(group);
+                            break;
+                        case "stop_meet_up":
+                            handleStopMeetUp(group, chatId);
+                            break;
+                        case "help_meet_up":
+                            handleHelp(chatId);
+                            break;
+                        case "voice_message_help":
+                            handleVoiceMessageHelp(chatId);
+                            break;
+                        default:
+                            handleDefault(chatId);
+                            break;
+                    }
+                }
+            } else {
+                handleOtherMessages(chatId, textMessage, update.getMessage().getMessageId());
+            }
+        }
+    }
+    
+    /**
+     * Handles voice messages by converting them to text and processing the text.
+     * 
+     * @param update The update containing the voice message
+     * @param chatId The chat ID where the voice message was sent
+     */
+    private void handleVoiceMessage(Update update, long chatId) {
+        try {
+            Voice voice = update.getMessage().getVoice();
+            log.info("Received voice message: duration={} seconds, mime-type={}", 
+                    voice.getDuration(), voice.getMimeType());
+            
+            // Get the voice file
+            GetFile getFile = new GetFile();
+            getFile.setFileId(voice.getFileId());
+            org.telegram.telegrambots.meta.api.objects.File voiceFile = execute(getFile);
+            
+            // Download the voice file
+            InputStream voiceStream = downloadFileAsStream(voiceFile);
+            
+            // Convert speech to text
+            String recognizedText = speechToTextService.convertSpeechToText(voiceStream);
+            
+            if (recognizedText != null && !recognizedText.isEmpty()) {
+                log.info("Voice message converted to text: {}", recognizedText);
+                
+                // Reply with the recognized text
+                sendMessage(chatId, "I heard: " + recognizedText, update.getMessage().getMessageId());
+                
+                // Process the recognized text as if it was a text message
+                if (recognizedText.startsWith("/")) {
+                    // Handle as command
+                    update.getMessage().setText(recognizedText);
+                    onUpdateReceived(update);
+                } else {
+                    // Handle as regular message
+                    handleOtherMessages(chatId, recognizedText, update.getMessage().getMessageId());
+                }
+            } else {
+                log.warn("Could not recognize speech in voice message");
+                sendMessage(chatId, "Sorry, I couldn't understand what you said.", update.getMessage().getMessageId());
+            }
+        } catch (TelegramApiException e) {
+            log.error("Error processing voice message", e);
+            sendMessage(chatId, "Sorry, there was an error processing your voice message.", update.getMessage().getMessageId());
+        }
+    }
 
+    /**
+     * Downloads a Telegram file as an input stream.
+     * 
+     * @param file The file to download
+     * @return An input stream containing the file data
+     * @throws TelegramApiException If an error occurs during download
+     */
+    private InputStream downloadFileAsStream(org.telegram.telegrambots.meta.api.objects.File file) throws TelegramApiException {
+        return downloadFileAsStream(file.getFilePath());
     }
 
     private boolean isUrlMalicious(String url) {
@@ -133,8 +212,19 @@ public class MeetUp extends TelegramLongPollingBot {
         }
     }
 
-    private void handleHelp(long chatId) {
+    private void handleVoiceMessageHelp(long chatId) {
+        StringBuilder message = new StringBuilder("Voice Message Recognition Feature:\n\n");
+        message.append("This bot can now understand voice messages! Here's how it works:\n\n");
+        message.append("1. Send a voice message to the bot\n");
+        message.append("2. The bot will convert your speech to text using CMU Sphinx\n");
+        message.append("3. The bot will respond to your voice message as if you had typed it\n\n");
+        message.append("You can even send commands via voice messages by starting with a slash (/)\n\n");
+        message.append("Note: This feature is optimized for Italian language recognition, but also supports English as a fallback.\n");
+        message.append("Speech recognition works best in quiet environments with clear speech.");
+        sendMessage(chatId, message.toString());
+    }
 
+    private void handleHelp(long chatId) {
         List<Command> commands = this.commandService.getCommands();
         String commandsList = commands.stream().map(command -> command.getName() + ": " + command.getDescription())
                 .collect(Collectors.joining("\n"));
@@ -158,7 +248,6 @@ public class MeetUp extends TelegramLongPollingBot {
         // check if the message is an url
         if (URL_PATTERN.matcher(textMessage).matches() && (isUrlMalicious(textMessage))) {
             sendMessage(chatId, "The url " + textMessage + " is malicious", messageId);
-
         }
     }
 
@@ -205,6 +294,5 @@ public class MeetUp extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             log.error(e.getMessage(), e);
         }
-
     }
 }
