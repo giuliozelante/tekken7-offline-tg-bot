@@ -1,8 +1,12 @@
 package it.giuliozelante.tekken7.offline.tg.bot.meetup.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.telegram.telegrambots.meta.api.methods.pinnedmessages.PinChatMessage;
@@ -10,40 +14,27 @@ import org.telegram.telegrambots.meta.api.methods.pinnedmessages.UnpinChatMessag
 import org.telegram.telegrambots.meta.api.methods.polls.SendPoll;
 import org.telegram.telegrambots.meta.api.methods.polls.StopPoll;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.MeetUp;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.Poll;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.TelegramGroup;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.repository.PollRepository;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import java.time.LocalDate;
-import java.time.DayOfWeek;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
-import java.util.Locale;
 
 @Singleton
 @Slf4j
+@RequiredArgsConstructor
 public class PollService {
-    @Inject
-    private PollRepository pollRepository;
-
-    private List<String> options;
-
-    public PollService() {
-        this.options = generateNextWeekdayOptions().stream()
+    private final PollRepository pollRepository;
+    private final List<String> options = generateNextWeekdayOptions().stream()
             .map(day -> {
                 String location = day.toLowerCase().contains("martedì") ? "(Parrot Sushi Lan)" : "(Rampage)";
                 return day + " " + location;
             })
-            .collect(java.util.stream.Collectors.toList());
-    }
+            .toList();
 
     private List<String> generateNextWeekdayOptions() {
         LocalDate today = LocalDate.now();
@@ -123,25 +114,5 @@ public class PollService {
 
     public void updateAll(List<Poll> list) {
         this.pollRepository.updateAll(list);
-    }
-
-    public void handleDaySelection(String callbackData) {
-        // Extract the day from the callback data
-        String selectedDay = callbackData.replace("day_", "");
-
-        // Prompt the user to input a location for the selected day
-        sendMessage(chatId, "Please enter the location for " + selectedDay + ":");
-    }
-
-    public void handleLocationInput(String location, String selectedDay) {
-        // Store the location for the selected day
-        userSelections.put(selectedDay, location);
-
-        // Confirm the input to the user
-        sendMessage(chatId, "Location for " + selectedDay + " set to: " + location);
-    }
-
-    public void editPoll(TelegramGroup group, MeetUp meetUp) {
-        // Implement the logic to edit the poll
     }
 }

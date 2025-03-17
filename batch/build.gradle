@@ -24,7 +24,6 @@ dependencies {
 
 // Configure Micronaut for the batch module
 micronaut {
-    
     processing {
         incremental(true)
         annotations("it.giuliozelante.tekken7.offline.tg.bot.batch.*")

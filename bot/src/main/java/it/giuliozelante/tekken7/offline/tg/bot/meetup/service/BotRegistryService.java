@@ -15,26 +15,20 @@ import io.micronaut.scheduling.annotation.Scheduled;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.MeetUp;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.Poll;
 import it.giuliozelante.tekken7.offline.tg.bot.meetup.entity.TelegramGroup;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Singleton
 @Slf4j
+@RequiredArgsConstructor
 public class BotRegistryService implements ApplicationEventListener<StartupEvent> {
+    private final MeetUp meetUp;
+    private final GroupService groupService;
+    private final PollService pollService;
+    private final CommandService commandService;
 
-    @Inject
-    MeetUp meetUp;
-
-    @Inject
-    GroupService groupService;
-
-    @Inject
-    PollService pollService;
-
-    @Inject
-    CommandService commandService;
-
+    @Override
     public void onApplicationEvent(final StartupEvent event) {
         try {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
